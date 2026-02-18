@@ -7,6 +7,7 @@ import {
   canPlayCard,
   playCards,
   pickUpPile,
+  drawAndTryFromTalong,
   swapCards,
   confirmSwap,
   cardLabel,
@@ -118,6 +119,12 @@ const GameBoard = ({ initialState, onReset }: GameBoardProps) => {
   // Check if any card in hand/faceUp can be played
   const sourceCards = source === 'hand' ? currentPlayer.hand : source === 'faceUp' ? currentPlayer.faceUp : [];
   const hasPlayableCard = sourceCards.some(c => canPlayCard(c, state.discardPile));
+  const canTryTalong =
+    state.phase === 'play' &&
+    state.discardPile.length > 0 &&
+    state.drawPile.length > 0 &&
+    source !== 'faceDown' &&
+    !hasPlayableCard;
 
   if (isFinished) {
     return (
@@ -184,9 +191,20 @@ const GameBoard = ({ initialState, onReset }: GameBoardProps) => {
       <div className="flex items-center justify-center gap-6 mb-6">
         {/* Draw pile */}
         <div className="text-center">
-          <div className="w-14 h-20 rounded-lg bg-gradient-to-br from-primary/50 to-accent/50 border border-primary/20 flex items-center justify-center card-shadow">
+          <button
+            type="button"
+            disabled={!canTryTalong}
+            onClick={() => {
+              if (!canTryTalong) return;
+              setState(drawAndTryFromTalong(state));
+              setSelectedCards([]);
+            }}
+            className={`w-14 h-20 rounded-lg bg-gradient-to-br from-primary/50 to-accent/50 border border-primary/20 flex items-center justify-center card-shadow ${
+              canTryTalong ? 'cursor-pointer hover:scale-105 transition-transform' : 'opacity-60 cursor-default'
+            }`}
+          >
             <span className="text-xs font-bold text-primary-foreground/40">{state.drawPile.length}</span>
-          </div>
+          </button>
           <span className="text-[10px] text-muted-foreground mt-1 block">Talong</span>
         </div>
 

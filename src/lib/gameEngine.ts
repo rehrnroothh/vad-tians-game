@@ -250,12 +250,12 @@ export const playCards = (
     // Check if the blind card can be played
     if (!canPlayCard(card, newState.discardPile)) {
       // Must pick up pile + the card
-      player.hand = [...newState.discardPile, card];
+      player.hand = [...player.hand, ...newState.discardPile, card];
       player.hand.sort((a, b) => a.value - b.value);
       newState.discardPile = [];
       newState.lastPlayedCards = [];
-      newState.currentPlayerIndex = nextPlayer(newState);
-      newState.message = `${player.name} vände ett ${cardLabel(card.value)} — fick ta upp högen! ${newState.players[newState.currentPlayerIndex].name}s tur.`;
+      // Turn does NOT pass – the player who picked up starts playing
+      newState.message = `${player.name} vände ett ${cardLabel(card.value)} — fick ta upp högen och spelar vidare.`;
       return newState;
     }
     
@@ -353,6 +353,53 @@ export const playCards = (
   return newState;
 };
 
+// Draw one card from the talong and try to play it.
+// Only allowed when the current player has no playable cards in hand/faceUp and is not on faceDown.
+export const drawAndTryFromTalong = (state: GameState): GameState => {
+  const newState = structuredClone(state);
+  const player = newState.players[newState.currentPlayerIndex];
+  const source = getPlaySource(player);
+
+  // Must be in hand/faceUp phase
+  if (source === 'faceDown') {
+    newState.message = `${player.name}: Du kan inte chansa på talongen när du spelar från nedåtvända kort.`;
+    return newState;
+  }
+  if (newState.drawPile.length === 0) {
+    newState.message = `${player.name}: Talongen är tom — du kan inte chansa.`;
+    return newState;
+  }
+  if (newState.discardPile.length === 0) {
+    newState.message = `${player.name}: Det finns ingen hög att spela på ännu.`;
+    return newState;
+  }
+
+  const sourceCards = source === 'hand' ? player.hand : player.faceUp;
+  const hasPlayable = sourceCards.some(c => canPlayCard(c, newState.discardPile));
+  if (hasPlayable) {
+    newState.message = `${player.name}: Du har redan spelbara kort — spela dem istället för att chansa.`;
+    return newState;
+  }
+
+  const drawn = newState.drawPile.pop()!;
+  player.hand.push(drawn);
+  player.hand.sort((a, b) => a.value - b.value);
+
+  // If the drawn card cannot be played, the player must pick up the pile (including this card)
+  if (!canPlayCard(drawn, newState.discardPile)) {
+    player.hand = [...player.hand, ...newState.discardPile];
+    player.hand.sort((a, b) => a.value - b.value);
+    newState.discardPile = [];
+    newState.lastPlayedCards = [];
+    // Turn does NOT pass – the player who picked up starts playing
+    newState.message = `${player.name} drog ett ${cardLabel(drawn.value)} men kunde inte spela — tog upp högen och spelar vidare.`;
+    return newState;
+  }
+
+  // Otherwise, automatically play the drawn card using normal logic
+  return playCards(newState, [drawn.id]);
+};
+
 // Pick up the entire discard pile
 export const pickUpPile = (state: GameState): GameState => {
   // If the current player is forced to cover a 2, they may not pick up.
@@ -370,9 +417,8 @@ export const pickUpPile = (state: GameState): GameState => {
   player.hand.sort((a, b) => a.value - b.value);
   newState.discardPile = [];
   newState.lastPlayedCards = [];
-  
-  newState.currentPlayerIndex = nextPlayer(newState);
-  newState.message = `${player.name} tog upp högen. ${newState.players[newState.currentPlayerIndex].name}s tur.`;
+  // Turn does NOT pass – the player who picked up starts playing
+  newState.message = `${player.name} tog upp högen och spelar vidare.`;
   
   return newState;
 };

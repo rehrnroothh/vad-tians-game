@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
-import { GameState, getPlaySource, canPlayCard, playCards, pickUpPile, swapCards, confirmSwap, getPlayableCards } from '@/lib/gameEngine';
+import { GameState, getPlaySource, canPlayCard, playCards, pickUpPile, swapCards, confirmSwap, getPlayableCards, drawAndTryFromTalong } from '@/lib/gameEngine';
 import { updateGameState } from '@/lib/roomService';
 import MiniCard from './MiniCard';
 import { ArrowUp, Hand, RotateCcw } from 'lucide-react';
@@ -122,6 +122,12 @@ const OnlineGameBoard = ({ roomId, sessionId, playerIndex, onReset }: OnlineGame
     const cards = selectedCards.map(id => [...(me?.hand ?? []), ...(me?.faceUp ?? [])].find(c => c.id === id)).filter(Boolean);
     return cards.length > 0 && canPlayCard(cards[0]!, state.discardPile);
   })();
+  const canTryTalong =
+    state.phase === 'play' &&
+    state.discardPile.length > 0 &&
+    state.drawPile.length > 0 &&
+    source !== 'faceDown' &&
+    !hasPlayableCard;
 
   if (state.phase === 'finished') {
     const winner = state.players[state.winner!];
@@ -178,9 +184,20 @@ const OnlineGameBoard = ({ roomId, sessionId, playerIndex, onReset }: OnlineGame
       {/* Piles */}
       <div className="flex items-center justify-center gap-6 mb-6">
         <div className="text-center">
-          <div className="w-14 h-20 rounded-lg bg-gradient-to-br from-primary/50 to-accent/50 border border-primary/20 flex items-center justify-center card-shadow">
+          <button
+            type="button"
+            disabled={!isMyTurn || !canTryTalong}
+            onClick={async () => {
+              if (!isMyTurn || !canTryTalong) return;
+              await applyAndSync(drawAndTryFromTalong(state));
+              setSelectedCards([]);
+            }}
+            className={`w-14 h-20 rounded-lg bg-gradient-to-br from-primary/50 to-accent/50 border border-primary/20 flex items-center justify-center card-shadow ${
+              isMyTurn && canTryTalong ? 'cursor-pointer hover:scale-105 transition-transform' : 'opacity-60 cursor-default'
+            }`}
+          >
             <span className="text-xs font-bold text-primary-foreground/40">{state.drawPile.length}</span>
-          </div>
+          </button>
           <span className="text-[10px] text-muted-foreground mt-1 block">Talong</span>
         </div>
         <div className="text-center">
