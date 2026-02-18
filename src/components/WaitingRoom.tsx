@@ -68,7 +68,7 @@ const WaitingRoom = ({ roomId, roomCode, sessionId, isHost, onGameStart }: Waiti
 
   const handleShare = () => {
     if (navigator.share) {
-      navigator.share({ title: 'Vänd Tia', text: `Gå med i mitt spel! Koden är: ${roomCode}`, url: shareUrl });
+      navigator.share({ title: 'Vänd Tia', text: `Vill du spela vändtia?? Koden är: ${roomCode}`, url: shareUrl });
     } else {
       handleCopyCode();
     }
