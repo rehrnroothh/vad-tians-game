@@ -1,5 +1,1 @@
 project_id = "tezjszdybegzkgutsypi"
-
-[auth]
-site_url = "https://vad-tians-game.lovable.app"
-additional_redirect_urls = ["https://id-preview--a30c40db-65f5-4673-b50b-e1c55b8cf63f.lovable.app", "https://vad-tians-game.lovable.app"]
