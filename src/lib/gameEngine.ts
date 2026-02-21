@@ -47,6 +47,11 @@ export const cardLabel = (value: number): string => {
 
 export const cardSortValue = (card: Card): number => card.value;
 
+
+const turnMessageForPlayer = (name: string, suffix = '.'): string =>
+  name.toLowerCase() === 'du' ? `Din tur${suffix}` : `${name}s tur${suffix}`;
+
+
 const createDeck = (): Card[] => {
   const suits: Card['suit'][] = ['hearts', 'diamonds', 'clubs', 'spades'];
   const deck: Card[] = [];
@@ -214,7 +219,7 @@ export const confirmSwap = (state: GameState, playerIndex: number): GameState =>
   // Check if all confirmed
   if (newState.swapConfirmed.every(Boolean)) {
     newState.phase = 'play';
-    newState.message = `${newState.players[0].name}s tur — spela ett kort!`;
+    newState.message = `${turnMessageForPlayer(newState.players[0].name, '')} — spela ett kort!`;
   } else {
     // Move to next unconfirmed player
     let next = (playerIndex + 1) % newState.players.length;
@@ -354,7 +359,7 @@ export const playCards = (
   
   // Next player
   newState.currentPlayerIndex = nextPlayer(newState);
-  newState.message = `${newState.players[newState.currentPlayerIndex].name}s tur.`;
+  newState.message = turnMessageForPlayer(newState.players[newState.currentPlayerIndex].name);
   
   return newState;
 };

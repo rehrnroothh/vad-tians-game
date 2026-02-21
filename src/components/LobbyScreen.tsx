@@ -95,9 +95,9 @@ const LobbyScreen = ({ onJoined, onStartSinglePlayer }: LobbyScreenProps) => {
                   type="text"
                   value={code}
                   onChange={e => setCode(e.target.value.toUpperCase())}
-                  placeholder="T.ex. ABC123"
+                  placeholder="T.ex. ABC"
                   className="w-full bg-card border border-border rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 tracking-widest text-center text-xl font-bold"
-                  maxLength={6}
+                  maxLength={3}
                 />
               </div>
             )}
@@ -106,7 +106,7 @@ const LobbyScreen = ({ onJoined, onStartSinglePlayer }: LobbyScreenProps) => {
 
             <button
               onClick={mode === 'create' ? handleCreate : handleJoin}
-              disabled={loading || !name.trim() || (mode === 'join' && code.length < 6)}
+              disabled={loading || !name.trim() || (mode === 'join' && code.length < 3)}
               className="w-full py-4 rounded-xl bg-gold text-primary-foreground font-semibold text-lg glow-gold disabled:opacity-40 flex items-center justify-center gap-2"
             >
               {loading ? <Loader2 size={20} className="animate-spin" /> : mode === 'create' ? 'Skapa rum' : 'Gå med'}

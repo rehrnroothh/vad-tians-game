@@ -24,7 +24,7 @@ const toRoom = (r: any): Room => ({ ...r, game_state: r.game_state ?? null }) as
 const toPlayer = (p: any): RoomPlayer => p as RoomPlayer;
 
 const generateCode = (): string => {
-  return Math.random().toString(36).substring(2, 8).toUpperCase();
+  return Math.random().toString(36).substring(2, 5).toUpperCase();
 };
 
 export const getOrCreateSessionId = (): string => {
