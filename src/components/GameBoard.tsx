@@ -289,7 +289,7 @@ const GameBoard = ({ initialState, onReset }: GameBoardProps) => {
       {/* Other players overview */}
       <div className="flex gap-2 justify-center mb-2 flex-wrap">
         {state.players.map((p, i) => {
-          if (i === state.currentPlayerIndex) return null;
+          if (i === myPlayerIndex) return null;
           const total = p.hand.length + p.faceUp.length + p.faceDown.length;
           return (
             <div key={i} className={`bg-card rounded-lg px-3 py-1.5 text-xs border ${i === state.currentPlayerIndex ? 'border-primary text-gold' : 'border-border text-muted-foreground'}`}>
@@ -301,7 +301,7 @@ const GameBoard = ({ initialState, onReset }: GameBoardProps) => {
 
       <div className="flex gap-3 justify-center mb-4 flex-wrap">
         {state.players.map((p, i) => {
-          if (i === state.currentPlayerIndex) return null;
+          if (i === myPlayerIndex) return null;
 
           return (
             <div key={`table-${i}`} className="rounded-lg border border-border/40 bg-card/40 p-2">
