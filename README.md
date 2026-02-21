@@ -1,3 +1,3 @@
-# Vändtia- game built together with lovable. 
+# Vändtia- game 
 
 **URL**: https://vad-tians-game.lovable.app/
