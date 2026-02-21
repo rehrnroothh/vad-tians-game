@@ -16,6 +16,7 @@ import {
   dealGame,
 } from '@/lib/gameEngine';
 import { RotateCcw, ArrowUp, Hand } from 'lucide-react';
+import { chooseRobotPlayDecision, chooseRobotSwapDecision } from '@/lib/robotAi';
 
 interface GameBoardProps {
   initialState: GameState;
@@ -192,48 +193,30 @@ const GameBoard = ({ initialState, onReset }: GameBoardProps) => {
 
     const timer = setTimeout(() => {
       if (state.phase === 'swap') {
-        setState(confirmSwap(state, state.currentPlayerIndex));
-        setSwapSource(null);
-        return;
-      }
-
-      const robot = state.players[state.currentPlayerIndex];
-      const robotSource = getPlaySource(robot);
-
-      if (robotSource === 'faceDown') {
-        const blindCard = robot.faceDown[0];
-        if (blindCard) {
-          setState(playCards(state, [blindCard.id]));
+        const swapDecision = chooseRobotSwapDecision(state, state.currentPlayerIndex);
+        if (swapDecision.type === 'swap') {
+          setState(swapCards(state, state.currentPlayerIndex, swapDecision.handCardId, swapDecision.faceUpCardId));
+        } else {
+          setState(confirmSwap(state, state.currentPlayerIndex));
+          setSwapSource(null);
         }
         return;
       }
 
-      const availableCards = robotSource === 'hand' ? robot.hand : robot.faceUp;
-      const playableCards = availableCards.filter(card => canPlayCard(card, state.discardPile));
-
-      if (playableCards.length > 0) {
-        const lowestPlayable = playableCards.reduce((lowest, card) =>
-          card.value < lowest.value ? card : lowest
-        );
-        const cardsToPlay = availableCards
-          .filter(card => card.value === lowestPlayable.value)
-          .map(card => card.id);
-        setState(playCards(state, cardsToPlay));
+      const playDecision = chooseRobotPlayDecision(state, state.currentPlayerIndex);
+      if (playDecision.type === 'faceDown') {
+        setState(playCards(state, [playDecision.cardId]));
         return;
       }
-
-      const robotCanTryTalong =
-        state.phase === 'play' &&
-        state.discardPile.length > 0 &&
-        state.drawPile.length > 0 &&
-        playableCards.length === 0;
-
-
-      if (robotCanTryTalong) {
-        setState(drawAndTryFromTalong(state));
-      } else {
-        setState(pickUpPile(state));
+      if (playDecision.type === 'play') {
+        setState(playCards(state, playDecision.cardIds));
+        return;
       }
+      if (playDecision.type === 'drawAndTry') {
+        setState(drawAndTryFromTalong(state));
+        return;
+      }
+      setState(pickUpPile(state));
     }, 900);
 
     return () => clearTimeout(timer);
