@@ -28,8 +28,10 @@ const GameBoard = ({ initialState, onReset }: GameBoardProps) => {
   const [selectedCards, setSelectedCards] = useState<string[]>([]);
   const [swapSource, setSwapSource] = useState<{ type: 'hand' | 'faceUp'; id: string } | null>(null);
 
+  const isRobotPlayer = (name: string) => name.toLowerCase().startsWith('örjan');
+
   const currentPlayer = state.players[state.currentPlayerIndex];
-  const humanPlayerIndex = state.players.findIndex((player) => player.name.toLowerCase() !== 'örjan lax');
+  const humanPlayerIndex = state.players.findIndex((player) => !isRobotPlayer(player.name));
   const myPlayerIndex = humanPlayerIndex === -1 ? 0 : humanPlayerIndex;
   const myPlayer = state.players[myPlayerIndex];
   const source = getPlaySource(myPlayer);
@@ -188,7 +190,7 @@ const GameBoard = ({ initialState, onReset }: GameBoardProps) => {
   
   
   useEffect(() => {
-    const isRobotTurn = currentPlayer.name.toLowerCase() === 'örjan lax';
+    const isRobotTurn = isRobotPlayer(currentPlayer.name);
     if (!isRobotTurn || isFinished) return;
 
     const timer = setTimeout(() => {
