@@ -63,7 +63,9 @@ const Index = () => {
     setScreen('game');
   };
 
-  const handleSinglePlayerStart = (playerName: string) => {
+  const handleSinglePlayerStart = () => {
+    const playerName = 'Du';
+
     const game = dealGame([playerName, 'Robot']);
     setSinglePlayerState(game);
     setScreen('single');

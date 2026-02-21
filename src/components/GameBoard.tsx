@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import MiniCard from './MiniCard';
 import {
+  Card,
   GameState,
   getPlaySource,
   canPlayCard,
@@ -27,7 +28,12 @@ const GameBoard = ({ initialState, onReset }: GameBoardProps) => {
   const [swapSource, setSwapSource] = useState<{ type: 'hand' | 'faceUp'; id: string } | null>(null);
 
   const currentPlayer = state.players[state.currentPlayerIndex];
-  const source = getPlaySource(currentPlayer);
+  const humanPlayerIndex = state.players.findIndex((player) => player.name.toLowerCase() !== 'robot');
+  const myPlayerIndex = humanPlayerIndex === -1 ? 0 : humanPlayerIndex;
+  const myPlayer = state.players[myPlayerIndex];
+  const source = getPlaySource(myPlayer);
+  const isMyTurn = state.currentPlayerIndex === myPlayerIndex;
+
   const isSwapPhase = state.phase === 'swap';
   const isFinished = state.phase === 'finished';
   const mustCoverTwoNow =
@@ -40,7 +46,10 @@ const GameBoard = ({ initialState, onReset }: GameBoardProps) => {
   const toggleSelect = (cardId: string) => {
     if (isSwapPhase) return;
     
-    const card = [...currentPlayer.hand, ...currentPlayer.faceUp, ...currentPlayer.faceDown]
+    if (!isMyTurn) return;
+
+    const card = [...myPlayer.hand, ...myPlayer.faceUp, ...myPlayer.faceDown]
+
       .find(c => c.id === cardId);
     if (!card) return;
 
@@ -55,7 +64,7 @@ const GameBoard = ({ initialState, onReset }: GameBoardProps) => {
     } else {
       // Can only select cards of same value
       if (selectedCards.length > 0) {
-        const firstCard = [...currentPlayer.hand, ...currentPlayer.faceUp]
+        const firstCard = [...myPlayer.hand, ...myPlayer.faceUp]
           .find(c => c.id === selectedCards[0]);
         if (firstCard && firstCard.value !== card.value) {
           setSelectedCards([cardId]);
@@ -67,19 +76,20 @@ const GameBoard = ({ initialState, onReset }: GameBoardProps) => {
   };
 
   const handlePlay = () => {
-    if (selectedCards.length === 0) return;
+    if (!isMyTurn || selectedCards.length === 0) return;
     const newState = playCards(state, selectedCards);
     setState(newState);
     setSelectedCards([]);
   };
 
   const handlePickUp = () => {
+    if (!isMyTurn) return;
     setState(pickUpPile(state));
     setSelectedCards([]);
   };
 
   const handleSwapClick = (type: 'hand' | 'faceUp', id: string) => {
-    if (!isSwapPhase) return;
+    if (!isSwapPhase || !isMyTurn) return;
     
     if (!swapSource) {
       setSwapSource({ type, id });
@@ -96,6 +106,7 @@ const GameBoard = ({ initialState, onReset }: GameBoardProps) => {
   };
 
   const handleConfirmSwap = () => {
+    if (!isMyTurn) return;
     setState(confirmSwap(state, state.currentPlayerIndex));
     setSwapSource(null);
   };
@@ -110,14 +121,14 @@ const GameBoard = ({ initialState, onReset }: GameBoardProps) => {
   // Check if selected cards can be played
   const canPlay = selectedCards.length > 0 && (() => {
     const cards = selectedCards.map(id =>
-      [...currentPlayer.hand, ...currentPlayer.faceUp].find(c => c.id === id)
+      [...myPlayer.hand, ...myPlayer.faceUp].find(c => c.id === id)
     ).filter(Boolean);
     if (cards.length === 0) return false;
     return canPlayCard(cards[0]!, state.discardPile);
   })();
 
   // Check if any card in hand/faceUp can be played
-  const sourceCards = source === 'hand' ? currentPlayer.hand : source === 'faceUp' ? currentPlayer.faceUp : [];
+  const sourceCards = source === 'hand' ? myPlayer.hand : source === 'faceUp' ? myPlayer.faceUp : [];
   const hasPlayableCard = sourceCards.some(c => canPlayCard(c, state.discardPile));
   const canTryTalong =
     state.phase === 'play' &&
@@ -126,6 +137,55 @@ const GameBoard = ({ initialState, onReset }: GameBoardProps) => {
     source !== 'faceDown' &&
     !hasPlayableCard;
 
+  
+
+    const renderTableStack = (
+      faceDownCard: Card | undefined,
+      faceUpCard: Card | undefined,
+      options?: {
+        allowFaceDownPlay?: boolean;
+        allowFaceUpSelection?: boolean;
+        faceUpSelected?: boolean;
+        onFaceDownClick?: () => void;
+        onFaceUpClick?: () => void;
+      },
+    ) => {
+      const showFaceDown = !!faceDownCard;
+      const showFaceUp = !!faceUpCard;
+  
+      if (!showFaceDown && !showFaceUp) {
+        return <div className="w-12 h-[4.2rem] rounded-lg border border-dashed border-border/30" />;
+      }
+  
+      return (
+        <div className="relative w-12 h-[4.2rem]">
+          {showFaceDown && (
+            <div className="absolute inset-0">
+              <MiniCard
+                card={faceDownCard}
+                faceDown
+                small
+                disabled={!options?.allowFaceDownPlay}
+                onClick={options?.onFaceDownClick}
+              />
+            </div>
+          )}
+          {showFaceUp && (
+            <div className="absolute inset-0 z-10">
+              <MiniCard
+                card={faceUpCard}
+                small
+                selected={options?.faceUpSelected}
+                disabled={!options?.allowFaceUpSelection}
+                onClick={options?.onFaceUpClick}
+              />
+            </div>
+          )}
+        </div>
+      );
+    };
+  
+  
   useEffect(() => {
     const isRobotTurn = currentPlayer.name.toLowerCase() === 'robot';
     if (!isRobotTurn || isFinished) return;
@@ -165,7 +225,9 @@ const GameBoard = ({ initialState, onReset }: GameBoardProps) => {
       const robotCanTryTalong =
         state.phase === 'play' &&
         state.discardPile.length > 0 &&
-        state.drawPile.length > 0;
+        state.drawPile.length > 0 &&
+        playableCards.length === 0;
+
 
       if (robotCanTryTalong) {
         setState(drawAndTryFromTalong(state));
@@ -225,14 +287,31 @@ const GameBoard = ({ initialState, onReset }: GameBoardProps) => {
       </AnimatePresence>
 
       {/* Other players overview */}
-      <div className="flex gap-3 justify-center mb-4 flex-wrap">
+      <div className="flex gap-2 justify-center mb-2 flex-wrap">
         {state.players.map((p, i) => {
           if (i === state.currentPlayerIndex) return null;
           const total = p.hand.length + p.faceUp.length + p.faceDown.length;
           return (
-            <div key={i} className="bg-card rounded-lg px-3 py-2 text-xs border border-border">
-              <span className="text-muted-foreground">{p.name}: </span>
-              <span className="text-foreground font-medium">{total} kort</span>
+            <div key={i} className={`bg-card rounded-lg px-3 py-1.5 text-xs border ${i === state.currentPlayerIndex ? 'border-primary text-gold' : 'border-border text-muted-foreground'}`}>
+              {p.name}: {total} kort
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="flex gap-3 justify-center mb-4 flex-wrap">
+        {state.players.map((p, i) => {
+          if (i === state.currentPlayerIndex) return null;
+
+          return (
+            <div key={`table-${i}`} className="rounded-lg border border-border/40 bg-card/40 p-2">
+              <p className="text-[10px] text-muted-foreground mb-1 text-center uppercase tracking-wider">{p.name} bordskort</p>
+              <div className="flex gap-2">
+                {[0, 1, 2].map(slot => (
+                  <div key={slot}>{renderTableStack(p.faceDown[slot], p.faceUp[slot])}</div>
+                ))}
+              </div>
+
             </div>
           );
         })}
@@ -244,9 +323,9 @@ const GameBoard = ({ initialState, onReset }: GameBoardProps) => {
         <div className="text-center">
           <button
             type="button"
-            disabled={!canTryTalong || currentPlayer.name.toLowerCase() === 'robot'}
+            disabled={!canTryTalong || !isMyTurn}
             onClick={() => {
-              if (!canTryTalong || currentPlayer.name.toLowerCase() === 'robot') return;
+              if (!canTryTalong || !isMyTurn) return;
               setState(drawAndTryFromTalong(state));
               setSelectedCards([]);
             }}
@@ -282,34 +361,22 @@ const GameBoard = ({ initialState, onReset }: GameBoardProps) => {
         <p className="text-xs text-muted-foreground mb-2 text-center uppercase tracking-wider">Bordskort</p>
         <div className="flex justify-center gap-3">
           {[0, 1, 2].map(i => (
-            <div key={i} className="flex flex-col items-center gap-1">
-              {/* Face-down */}
-              {currentPlayer.faceDown[i] ? (
-                <MiniCard
-                  card={currentPlayer.faceDown[i]}
-                  faceDown
-                  small
-                  disabled={currentPlayer.name.toLowerCase() === 'robot' || source !== 'faceDown'}
-                  onClick={() => currentPlayer.name.toLowerCase() !== 'robot' && source === 'faceDown' && toggleSelect(currentPlayer.faceDown[i].id)}
-                />
-              ) : (
-                <div className="w-12 h-[4.2rem] rounded-lg border border-dashed border-border/30" />
-              )}
-              {/* Face-up */}
-              {currentPlayer.faceUp[i] ? (
-                <MiniCard
-                  card={currentPlayer.faceUp[i]}
-                  small
-                  selected={isSwapPhase ? swapSource?.id === currentPlayer.faceUp[i].id : selectedCards.includes(currentPlayer.faceUp[i].id)}
-                  disabled={currentPlayer.name.toLowerCase() === 'robot' || (!isSwapPhase && source !== 'faceUp')}
-                  onClick={() => {
-                    if (isSwapPhase) handleSwapClick('faceUp', currentPlayer.faceUp[i].id);
-                    else if (source === 'faceUp') toggleSelect(currentPlayer.faceUp[i].id);
-                  }}
-                />
-              ) : (
-                <div className="w-12 h-[4.2rem] rounded-lg border border-dashed border-border/30" />
-              )}
+           <div key={i}>
+           {renderTableStack(myPlayer.faceDown[i], myPlayer.faceUp[i], {
+             allowFaceDownPlay: isMyTurn && source === 'faceDown',
+             allowFaceUpSelection: isMyTurn && (isSwapPhase || source === 'faceUp'),
+             faceUpSelected: myPlayer.faceUp[i]
+               ? (isSwapPhase ? swapSource?.id === myPlayer.faceUp[i].id : selectedCards.includes(myPlayer.faceUp[i].id))
+               : false,
+             onFaceDownClick: () => isMyTurn && source === 'faceDown' && myPlayer.faceDown[i] && toggleSelect(myPlayer.faceDown[i].id),
+             onFaceUpClick: () => {
+               if (!myPlayer.faceUp[i]) return;
+               if (isSwapPhase) handleSwapClick('faceUp', myPlayer.faceUp[i].id);
+               else if (source === 'faceUp') toggleSelect(myPlayer.faceUp[i].id);
+             },
+           })}
+
+
             </div>
           ))}
         </div>
@@ -319,16 +386,15 @@ const GameBoard = ({ initialState, onReset }: GameBoardProps) => {
       <div className="mt-auto">
         <p className="text-xs text-muted-foreground mb-2 text-center uppercase tracking-wider">
           <Hand size={12} className="inline mr-1" />
-          Hand ({currentPlayer.hand.length})
+          Hand ({myPlayer.hand.length})
         </p>
         <div className="flex justify-center gap-1.5 flex-wrap">
-          {currentPlayer.hand.map(card => (
+          {myPlayer.hand.map(card => (
             <MiniCard
               key={card.id}
               card={card}
               selected={isSwapPhase ? swapSource?.id === card.id : selectedCards.includes(card.id)}
-              disabled={currentPlayer.name.toLowerCase() === 'robot' || (!isSwapPhase && source !== 'hand')}
-              onClick={() => {
+              disabled={!isMyTurn || (!isSwapPhase && source !== 'hand')}              onClick={() => {
                 if (isSwapPhase) handleSwapClick('hand', card.id);
                 else toggleSelect(card.id);
               }}
@@ -343,7 +409,7 @@ const GameBoard = ({ initialState, onReset }: GameBoardProps) => {
           <motion.button
             whileTap={{ scale: 0.95 }}
             onClick={handleConfirmSwap}
-            disabled={currentPlayer.name.toLowerCase() === 'robot'}
+            disabled={!isMyTurn}
             className="px-6 py-3 rounded-xl bg-gold text-white font-semibold glow-gold"
           >
             ✓ Klar med byten
@@ -354,7 +420,7 @@ const GameBoard = ({ initialState, onReset }: GameBoardProps) => {
               <motion.button
                 whileTap={{ scale: 0.95 }}
                 onClick={handlePlay}
-                disabled={currentPlayer.name.toLowerCase() === 'robot'}
+                disabled={!isMyTurn}
                 className="px-5 py-3 rounded-xl bg-emerald-500 text-white font-semibold flex items-center gap-2"
               >
                 <ArrowUp size={16} /> Spela
@@ -364,7 +430,7 @@ const GameBoard = ({ initialState, onReset }: GameBoardProps) => {
               <motion.button
                 whileTap={{ scale: 0.95 }}
                 onClick={handlePickUp}
-                disabled={currentPlayer.name.toLowerCase() === 'robot'}
+                disabled={!isMyTurn}
                 className="px-5 py-3 rounded-xl bg-destructive text-destructive-foreground font-semibold flex items-center gap-2"
               >
                 Ta upp högen
