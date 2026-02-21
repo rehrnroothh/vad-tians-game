@@ -24,15 +24,13 @@ interface GameBoardProps {
 }
 
 const ORJAN_LOSING_LINES = [
-  'Örjan Lax: “Jaha. Kul. Då var det alltså riggat.”',
-  '“Det där räknas inte. Reglerna är ju helt fel.”',
-  '“Vem kom på det här spelet ens? Det är ju trasigt.”',
-  '“Snyggt. Man ska alltså vinna på tur nu. Fantastiskt.”',
-  '“Nej, stopp. Du flyttade fel. Jag såg det.”',
-  '“Om du ska fuska kan vi lika gärna lägga ner.”',
-  '“Okej, grattis då. Men det här säger mer om spelet än om mig.”',
-  '“Jag förlorade inte. Jag avbröt.”',
-  '“Det där är inte ett ‘spel’, det är ett irritationsmoment.”',
+  'Örjan Lax: “Jaha. Kul. Då var det alltså riggat, kukkannen.”',
+  'Örjan Lax: "Det där räknas inte. Reglerna är ju felprogrammerade”',,
+  'Örjan Lax: "Snyggt. Man ska alltså vinna på tur nu. Fantastiskt.”',
+  'Örjan Lax: "Om du ska fuska kan vi lika gärna lägga ned denna skit.”',
+  'Örjan Lax: "Okej, grattis då förfan. Men det här säger mer om spelet än om mig.”',
+  'Örjan Lax: "Jag förlorade inte. Jag avbröt.”',
+  'Örjan Lax: "Det där är inte ett ‘spel’, det är ett jävla irritationsmoment.”',
 ];
 
 
@@ -47,16 +45,15 @@ const ORJAN_LOSS_IMAGE = {
 };
 
 const ORJAN_WINNING_LINES = [
-  '“Det var inte ens svårt. Det svåra var att stå ut med processen.”',
-  '“Okej, nu kan vi sluta. Jag har bevisat poängen.”',
-  '“Grattis till din insats. Du var… närvarande.”',
-  '“Du märker skillnaden när man tänker innan man gör.”',
-  '“Snyggt. Och då menar jag: av mig.”',
-  '“Alltså, jag säger inte att du var helt usel… men du gjorde ditt bästa för att bevisa motsatsen.”',
-  '“Det är nästan rörande hur du försökte. Nästan.”',
-  '“Ja. Det här är exakt varför jag inte gillar spel. Man tvingas vinna åt andra.”',
-  '“Nu kommer du säga ‘tur’. Absolut. Allt som inte är din framgång är ‘tur’.”',
-  '“Bra. Då kan vi gå vidare till något vuxet.”',
+  'Örjan Lax: "Det var inte så svårt. Det svåra var att stå ut med dig och processen.”',
+  'Örjan Lax: "Okej, nu kan vi sluta. Jag har bevisat poängen.”',
+  'Örjan Lax: "Grattis till din insats. Du var… närvarande.”',
+  'Örjan Lax: "Du märker skillnaden när man tänker innan man gör.”',
+  'Örjan Lax: "Snyggt. Och då menar jag: av mig, idiot.”',
+  'Örjan Lax: "Alltså, jag säger inte att du var helt usel… men du gjorde ditt bästa för att bevisa motsatsen.”',
+  'Örjan Lax: "Det är nästan rörande hur du försökte. Nästan.”',
+  'Örjan Lax: "Ja, det här är exakt varför jag inte gillar spel. Man tvingas vinna åt andra.”',
+  'Örjan Lax: "Bra. Då kan vi gå vidare till något vuxet för en gångs jävla skull.”',
 ];
 
 const GameBoard = ({ initialState, onReset }: GameBoardProps) => {
