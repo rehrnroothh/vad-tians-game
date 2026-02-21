@@ -38,12 +38,12 @@ const ORJAN_LOSING_LINES = [
 
 const ORJAN_WIN_IMAGE = {
   primary: '/orjan-winning.png',
-  fallback: '/orjan-winning.svg',
+  
 };
 
 const ORJAN_LOSS_IMAGE = {
   primary: '/orjan-losing.png',
-  fallback: '/orjan-losing.svg',
+  
 };
 
 const ORJAN_WINNING_LINES = [
@@ -483,14 +483,14 @@ const GameBoard = ({ initialState, onReset }: GameBoardProps) => {
           >
             <span className="text-6xl mb-4 block">🏆</span>
             <h2 className="text-3xl font-bold text-gold mb-2">{winner.name} vinner!</h2>
-            <p className="text-muted-foreground mb-4">Grattis!</p>
+            
             {(orjanWon || humanWonAgainstOrjan) && (
               <img
                 src={resultImageSrc}
                 alt={orjanWon ? 'Örjan när han vinner' : 'Örjan när han förlorar'}
                 className="mx-auto mb-4 w-full max-w-sm rounded-xl border border-border/50"
                 onError={(event) => {
-                  const fallbackSrc = orjanWon ? ORJAN_WIN_IMAGE.fallback : ORJAN_LOSS_IMAGE.fallback;
+                  const fallbackSrc = orjanWon ? ORJAN_WIN_IMAGE.primary : ORJAN_LOSS_IMAGE.primary;
                   if (event.currentTarget.src.endsWith(fallbackSrc)) return;
                   setResultImageSrc(fallbackSrc);
                 }}
