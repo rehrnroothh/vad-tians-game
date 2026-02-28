@@ -151,6 +151,7 @@ describe('swapCards', () => {
     const state: GameState = {
       ...createState(),
       phase: 'swap',
+      drawPile: [card('draw-replacement', 5)],
       players: [
         {
           name: 'Alice',
@@ -164,7 +165,8 @@ describe('swapCards', () => {
 
     const afterSwap = swapCards(state, 0, 'hand-seven', 'table-seven');
 
-    expect(afterSwap.players[0].hand.map((currentCard) => currentCard.id)).toEqual(['other']);
+    expect(afterSwap.players[0].hand.map((currentCard) => currentCard.id)).toEqual(['draw-replacement', 'other']);
     expect(afterSwap.players[0].faceUp[0].map((currentCard) => currentCard.id)).toEqual(['table-seven', 'hand-seven']);
+    expect(afterSwap.drawPile).toHaveLength(0);
   });
 });

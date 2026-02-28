@@ -30,6 +30,7 @@ const OnlineGameBoard = ({ roomId, sessionId, playerIndex, onReset }: OnlineGame
   const [state, setState] = useState<GameState | null>(null);
   const [selectedCards, setSelectedCards] = useState<string[]>([]);
   const [swapSource, setSwapSource] = useState<{ type: 'hand' | 'faceUp'; id: string } | null>(null);
+  const [showWinState, setShowWinState] = useState(false);
   const [disconnectNotice, setDisconnectNotice] = useState<string | null>(null);
   const stateRef = useRef<GameState | null>(null);
   const roomPlayerCountRef = useRef<number | null>(null);
@@ -272,11 +273,24 @@ const OnlineGameBoard = ({ roomId, sessionId, playerIndex, onReset }: OnlineGame
   const isFinished = state.phase === 'finished';
   const winner = isFinished ? state.players[state.winner!] : null;
 
+  useEffect(() => {
+    if (!isFinished) {
+      setShowWinState(false);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      setShowWinState(true);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [isFinished]);
+
   return (
     <div className="flex flex-col min-h-screen p-4 pt-14 pb-6 relative">
       <div className="gradient-radial fixed inset-0 pointer-events-none" />
 
-      <div className={isFinished ? 'opacity-35 pointer-events-none transition-opacity' : 'transition-opacity'}>
+      <div className={showWinState ? 'opacity-35 pointer-events-none transition-opacity' : 'transition-opacity'}>
 
       {/* Header */}
       <div className="fixed top-0 left-0 right-0 p-3 flex items-center justify-between z-20 bg-background/80 backdrop-blur-sm border-b border-border">
@@ -445,7 +459,7 @@ const OnlineGameBoard = ({ roomId, sessionId, playerIndex, onReset }: OnlineGame
       </div>
       </div>
 
-      {isFinished && (
+      {showWinState && (
         <div className="fixed inset-0 z-30 flex items-center justify-center p-6">
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}

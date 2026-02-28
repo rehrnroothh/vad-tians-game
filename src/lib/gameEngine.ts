@@ -267,6 +267,9 @@ export const swapCards = (
 
   if (handCard.value === topFaceUpCard.value) {
     faceUpStack.push(...player.hand.splice(handIdx, 1));
+    if (newState.drawPile.length > 0) {
+      player.hand.push(newState.drawPile.pop()!);
+    }
   } else {
     [player.hand[handIdx], faceUpStack[faceUpStack.length - 1]] = [topFaceUpCard, handCard];
   }

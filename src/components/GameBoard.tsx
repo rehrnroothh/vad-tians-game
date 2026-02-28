@@ -61,6 +61,7 @@ const GameBoard = ({ initialState, onReset }: GameBoardProps) => {
   const [state, setState] = useState<GameState>(() => normalizeGameState(initialState));
   const [selectedCards, setSelectedCards] = useState<string[]>([]);
   const [swapSource, setSwapSource] = useState<{ type: 'hand' | 'faceUp'; id: string } | null>(null);
+  const [showWinState, setShowWinState] = useState(false);
   const [finalLine, setFinalLine] = useState('');
   const [resultImageSrc, setResultImageSrc] = useState('');
 
@@ -292,6 +293,19 @@ const GameBoard = ({ initialState, onReset }: GameBoardProps) => {
 
   useEffect(() => {
     if (!isFinished) {
+      setShowWinState(false);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      setShowWinState(true);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [isFinished]);
+
+  useEffect(() => {
+    if (!isFinished) {
       setFinalLine('');
       setResultImageSrc('');
       return;
@@ -313,7 +327,7 @@ const GameBoard = ({ initialState, onReset }: GameBoardProps) => {
     <div className="flex flex-col min-h-screen p-4 pt-14 pb-6 relative">
       <div className="gradient-radial fixed inset-0 pointer-events-none" />
 
-      <div className={isFinished ? 'opacity-35 pointer-events-none transition-opacity' : 'transition-opacity'}>
+      <div className={showWinState ? 'opacity-35 pointer-events-none transition-opacity' : 'transition-opacity'}>
 
       {/* Header */}
       <div className="fixed top-0 left-0 right-0 p-3 flex items-center justify-between z-20 bg-background/80 backdrop-blur-sm border-b border-border">
@@ -459,14 +473,17 @@ const GameBoard = ({ initialState, onReset }: GameBoardProps) => {
       {/* Action buttons */}
       <div className="flex gap-3 justify-center mt-4">
         {isSwapPhase ? (
-          <motion.button
-            whileTap={{ scale: 0.95 }}
-            onClick={handleConfirmSwap}
-            disabled={!isMyTurn}
-            className="px-6 py-3 rounded-xl bg-gold text-white font-semibold glow-gold"
-          >
-            ✓ Klar med byten
-          </motion.button>
+          isMyTurn ? (
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              onClick={handleConfirmSwap}
+              className="px-6 py-3 rounded-xl bg-gold text-white font-semibold glow-gold"
+            >
+              ✓ Klar med byten
+            </motion.button>
+          ) : (
+            <p className="text-muted-foreground text-sm">Väntar på {currentPlayer.name}...</p>
+          )
         ) : (
           <>
             {canPlay && (
@@ -495,7 +512,7 @@ const GameBoard = ({ initialState, onReset }: GameBoardProps) => {
       </div>
       </div>
 
-      {isFinished && (
+      {showWinState && (
         <div className="fixed inset-0 z-30 flex items-center justify-center p-6">
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
