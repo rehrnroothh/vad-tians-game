@@ -42,7 +42,7 @@ const Spelregler = () => {
           <p className="mb-2 text-sm font-semibold uppercase tracking-[0.25em] text-primary">Spelregler</p>
           <h1 className="mb-4 text-3xl font-bold text-foreground sm:text-4xl">Vändtia, som den fungerar här</h1>
           <p className="max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">
-            Detta är familjen Froms variant av vändtia, har du eventuella invändningar kan du skapa din egen app, TACK. Reglerna nedan följer spelet som faktiskt är implementerat, så de matchar vad som händer i både mot Örjan och onlineläget.
+            Detta är familjen Froms variant av vändtia, har du eventuella invändningar kan du skapa din egen app, TACK. Reglerna nedan följer spelet som faktiskt är implementerat, så de matchar vad som händer både mot Örjan och i onlineläget.
           </p>
         </section>
 
