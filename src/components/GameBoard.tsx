@@ -179,6 +179,12 @@ const GameBoard = ({ initialState, onReset }: GameBoardProps) => {
     state.drawPile.length > 0 &&
     source !== 'faceDown' &&
     !hasPlayableCard;
+  const canPickUpPile =
+    state.phase === 'play' &&
+    isMyTurn &&
+    state.discardPile.length > 0 &&
+    source !== 'faceDown' &&
+    !mustCoverTwoNow;
 
   
 
@@ -452,12 +458,12 @@ const GameBoard = ({ initialState, onReset }: GameBoardProps) => {
                 <ArrowUp size={16} /> Spela
               </motion.button>
             )}
-            {state.discardPile.length > 0 && !hasPlayableCard && source !== 'faceDown' && !mustCoverTwoNow && (
+            {canPickUpPile && (
               <motion.button
                 whileTap={{ scale: 0.95 }}
                 onClick={handlePickUp}
                 disabled={!isMyTurn}
-                className="px-5 py-3 rounded-xl bg-destructive text-destructive-foreground font-semibold flex items-center gap-2"
+                className="px-5 py-3 rounded-xl bg-secondary text-secondary-foreground font-semibold flex items-center gap-2"
               >
                 Ta upp högen
               </motion.button>

@@ -173,6 +173,12 @@ const OnlineGameBoard = ({ roomId, sessionId, playerIndex, onReset }: OnlineGame
     state.drawPile.length > 0 &&
     source !== 'faceDown' &&
     !hasPlayableCard;
+  const canPickUpPile =
+    state.phase === 'play' &&
+    isMyTurn &&
+    state.discardPile.length > 0 &&
+    source !== 'faceDown' &&
+    !mustCoverTwoNow;
 
 
     const renderTableStack = (
@@ -381,8 +387,8 @@ const OnlineGameBoard = ({ roomId, sessionId, playerIndex, onReset }: OnlineGame
                 <ArrowUp size={16} /> Spela
               </button>
             )}
-            {state.discardPile.length > 0 && !hasPlayableCard && source !== 'faceDown' && !mustCoverTwoNow && (
-              <button onClick={handlePickUp} className="px-5 py-3 rounded-xl bg-destructive text-destructive-foreground font-semibold">
+            {canPickUpPile && (
+              <button onClick={handlePickUp} className="px-5 py-3 rounded-xl bg-secondary text-secondary-foreground font-semibold">
                 Ta upp högen
               </button>
             )}
