@@ -28,7 +28,7 @@ interface GameBoardProps {
 
 const ORJAN_LOSING_LINES = [
   'Örjan Lax: “Jaha. Kul. Då var det alltså riggat, kukkannen!”',
-  'Örjan Lax: "Din jävla Viktor-till-kassa-5-kopia, det där räknas inte. Reglerna är ju felprogrammerade”',,
+  'Örjan Lax: "Din jävla Viktor-till-kassa-5-kopia, det där räknas inte. Reglerna är ju felprogrammerade”',
   'Örjan Lax: "Om du ska fuska kan vi lika gärna lägga ned denna skit med en gång.”',
   'Örjan Lax: "Okej, grattis då förfan. Men det här säger mer om spelet än om mig.”',
   'Örjan Lax: "Jag förlorade inte. Jag avbröt.”',
@@ -348,10 +348,10 @@ const GameBoard = ({ initialState, onReset }: GameBoardProps) => {
 
       {/* Header */}
       <div className="fixed top-0 left-0 right-0 p-3 flex items-center justify-between z-20 bg-background/80 backdrop-blur-sm border-b border-border">
-        <div className="text-sm text-muted-foreground">
+        <div className="text-sm text-foreground/70">
           {state.drawPile.length} i talong
         </div>
-        <button onClick={onReset} className="p-1.5 rounded-lg bg-secondary text-muted-foreground">
+        <button onClick={onReset} className="p-1.5 rounded-lg bg-secondary text-foreground/70">
           <RotateCcw size={16} />
         </button>
       </div>
@@ -363,7 +363,7 @@ const GameBoard = ({ initialState, onReset }: GameBoardProps) => {
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0 }}
-          className="text-center text-sm text-muted-foreground mb-4 px-4"
+          className="text-center text-sm text-foreground/70 mb-4 px-4"
         >
           {state.message}
         </motion.div>
@@ -375,7 +375,7 @@ const GameBoard = ({ initialState, onReset }: GameBoardProps) => {
           if (i === myPlayerIndex) return null;
           const total = p.hand.length + getFaceUpCards(p).length + p.faceDown.length;
           return (
-            <div key={i} className={`bg-card rounded-lg px-3 py-1.5 text-xs border ${i === state.currentPlayerIndex ? 'border-primary text-gold' : 'border-border text-muted-foreground'}`}>
+            <div key={i} className={`bg-card rounded-lg px-3 py-1.5 text-xs border ${i === state.currentPlayerIndex ? 'border-primary text-gold' : 'border-border text-foreground/70'}`}>
               {p.name}: {total} kort
             </div>
           );
@@ -388,7 +388,7 @@ const GameBoard = ({ initialState, onReset }: GameBoardProps) => {
 
           return (
             <div key={`table-${i}`} className="rounded-lg border border-border/40 bg-card/40 p-2">
-              <p className="text-[10px] text-muted-foreground mb-1 text-center uppercase tracking-wider">{p.name} bordskort</p>
+              <p className="text-[10px] text-foreground/70 mb-1 text-center uppercase tracking-wider">{p.name} bordskort</p>
               <div className="flex gap-2">
                 {[0, 1, 2].map(slot => (
                   <div key={slot}>{renderTableStack(p.faceDown[slot], p.faceUp[slot])}</div>
@@ -418,7 +418,7 @@ const GameBoard = ({ initialState, onReset }: GameBoardProps) => {
           >
             <span className="text-xs font-bold text-primary-foreground/40">{state.drawPile.length}</span>
           </button>
-          <span className={`text-[10px] mt-1 block transition-colors ${canTryTalong ? 'text-emerald-400' : 'text-muted-foreground'}`}>
+          <span className={`text-[10px] mt-1 block transition-colors ${canTryTalong ? 'text-emerald-400' : 'text-foreground/70'}`}>
             Talong
           </span>
           <div className={`mx-auto mt-1 h-0.5 w-14 rounded-full transition-opacity ${canTryTalong ? 'bg-emerald-400 opacity-100' : 'bg-transparent opacity-0'}`} />
@@ -430,7 +430,7 @@ const GameBoard = ({ initialState, onReset }: GameBoardProps) => {
             <MiniCard card={topDiscard} />
           ) : (
             <div className="w-14 h-20 rounded-lg border-2 border-dashed border-border flex items-center justify-center">
-              <span className="text-xs text-muted-foreground">Tom</span>
+              <span className="text-xs text-foreground/70">Tom</span>
             </div>
           )}
           <span className="text-[10px] text-white mt-1 block">
@@ -441,7 +441,7 @@ const GameBoard = ({ initialState, onReset }: GameBoardProps) => {
 
       {/* Current player's table cards */}
       <div className="mb-4">
-        <p className="text-xs text-muted-foreground mb-2 text-center uppercase tracking-wider">Bordskort</p>
+        <p className="text-xs text-foreground/70 mb-2 text-center uppercase tracking-wider">Bordskort</p>
         <div className="flex justify-center gap-3">
           {[0, 1, 2].map(i => {
             const topFaceUpCard = myFaceUpTopCards[i];
@@ -478,7 +478,7 @@ const GameBoard = ({ initialState, onReset }: GameBoardProps) => {
 
       {/* Current player's hand */}
       <div className="mt-auto">
-        <p className="text-xs text-muted-foreground mb-2 text-center uppercase tracking-wider">
+        <p className="text-xs text-foreground/70 mb-2 text-center uppercase tracking-wider">
           <Hand size={12} className="inline mr-1" />
           Hand ({myPlayer.hand.length})
         </p>
@@ -504,12 +504,12 @@ const GameBoard = ({ initialState, onReset }: GameBoardProps) => {
             <motion.button
               whileTap={{ scale: 0.95 }}
               onClick={handleConfirmSwap}
-              className="px-6 py-3 rounded-xl bg-gold text-white font-semibold glow-gold"
+              className="px-6 py-3 rounded-xl bg-gold text-black font-semibold glow-gold"
             >
               ✓ Klar med byten
             </motion.button>
           ) : (
-            <p className="text-muted-foreground text-sm">Väntar på {currentPlayer.name}...</p>
+            <p className="text-foreground/70 text-sm">Väntar på {currentPlayer.name}...</p>
           )
         ) : (
           <>
@@ -561,7 +561,7 @@ const GameBoard = ({ initialState, onReset }: GameBoardProps) => {
                 }}
               />
             )}
-            {finalLine && <p className="text-sm italic text-muted-foreground mb-8">{finalLine}</p>}
+            {finalLine && <p className="text-sm italic text-foreground/70 mb-8">{finalLine}</p>}
             <div className="flex gap-3 justify-center">
               <button onClick={handleRestart} className="px-6 py-3 rounded-xl bg-gold text-primary-foreground font-semibold glow-gold">Spela igen</button>
               <button onClick={onReset} className="px-6 py-3 rounded-xl bg-secondary text-secondary-foreground font-semibold">Byt spelare</button>

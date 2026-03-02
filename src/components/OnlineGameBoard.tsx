@@ -122,7 +122,7 @@ const OnlineGameBoard = ({ roomId, sessionId, playerIndex, onReset }: OnlineGame
     <div className="flex min-h-screen items-center justify-center">
       <div className="text-center">
         <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-        <p className="text-muted-foreground">Laddar spel...</p>
+        <p className="text-foreground/70">Laddar spel...</p>
       </div>
     </div>
   );
@@ -310,8 +310,8 @@ const OnlineGameBoard = ({ roomId, sessionId, playerIndex, onReset }: OnlineGame
 
       {/* Header */}
       <div className="fixed top-0 left-0 right-0 p-3 flex items-center justify-between z-20 bg-background/80 backdrop-blur-sm border-b border-border">
-        <div className="text-sm text-muted-foreground"> {state.drawPile.length} kvar</div>
-        <button onClick={onReset} className="p-1.5 rounded-lg bg-secondary text-muted-foreground"><RotateCcw size={16} /></button>
+        <div className="text-sm text-foreground/70"> {state.drawPile.length} kvar</div>
+        <button onClick={onReset} className="p-1.5 rounded-lg bg-secondary text-foreground/70"><RotateCcw size={16} /></button>
       </div>
 
       <AnimatePresence>
@@ -333,7 +333,7 @@ const OnlineGameBoard = ({ roomId, sessionId, playerIndex, onReset }: OnlineGame
           if (i === playerIndex) return null;
           const total = p.hand.length + getFaceUpCards(p).length + p.faceDown.length;
           return (
-            <div key={i} className={`bg-card rounded-lg px-3 py-1.5 text-xs border ${i === state.currentPlayerIndex ? 'border-primary text-gold' : 'border-border text-muted-foreground'}`}>
+            <div key={i} className={`bg-card rounded-lg px-3 py-1.5 text-xs border ${i === state.currentPlayerIndex ? 'border-primary text-gold' : 'border-border text-foreground/70'}`}>
               {p.name}: {total} kort
             </div>
           );
@@ -346,7 +346,7 @@ const OnlineGameBoard = ({ roomId, sessionId, playerIndex, onReset }: OnlineGame
 
           return (
             <div key={`table-${i}`} className="rounded-lg border border-border/40 bg-card/40 p-2">
-              <p className="text-[10px] text-muted-foreground mb-1 text-center uppercase tracking-wider">{p.name} bordskort</p>
+              <p className="text-[10px] text-foreground/70 mb-1 text-center uppercase tracking-wider">{p.name} bordskort</p>
               <div className="flex gap-2">
                 {[0, 1, 2].map(slot => (
                   <div key={slot}>{renderTableStack(p.faceDown[slot], p.faceUp[slot])}</div>
@@ -359,7 +359,7 @@ const OnlineGameBoard = ({ roomId, sessionId, playerIndex, onReset }: OnlineGame
 
       {/* Message */}
       <AnimatePresence mode="wait">
-        <motion.p key={state.message} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center text-sm text-muted-foreground mb-4">
+        <motion.p key={state.message} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center text-sm text-foreground/70 mb-4">
           {state.message}
         </motion.p>
       </AnimatePresence>
@@ -381,7 +381,7 @@ const OnlineGameBoard = ({ roomId, sessionId, playerIndex, onReset }: OnlineGame
           >
             <span className="text-xs font-bold text-primary-foreground/40">{state.drawPile.length}</span>
           </button>
-          <span className={`text-[10px] mt-1 block transition-colors ${isMyTurn && canTryTalong ? 'text-emerald-400' : 'text-muted-foreground'}`}>
+          <span className={`text-[10px] mt-1 block transition-colors ${isMyTurn && canTryTalong ? 'text-emerald-400' : 'text-foreground/70'}`}>
             Talong
           </span>
           <div className={`mx-auto mt-1 h-0.5 w-14 rounded-full transition-opacity ${isMyTurn && canTryTalong ? 'bg-emerald-400 opacity-100' : 'bg-transparent opacity-0'}`} />
@@ -389,7 +389,7 @@ const OnlineGameBoard = ({ roomId, sessionId, playerIndex, onReset }: OnlineGame
         <div className="text-center">
           {topDiscard ? <MiniCard card={topDiscard} /> : (
             <div className="w-14 h-20 rounded-lg border-2 border-dashed border-border flex items-center justify-center">
-              <span className="text-xs text-muted-foreground">Tom</span>
+              <span className="text-xs text-foreground/70">Tom</span>
             </div>
           )}
           <span className="text-[10px] text-white mt-1 block">Hög ({state.discardPile.length})</span>
@@ -399,7 +399,7 @@ const OnlineGameBoard = ({ roomId, sessionId, playerIndex, onReset }: OnlineGame
       {/* My table cards */}
       {me && (
         <div className="mb-4">
-          <p className="text-xs text-muted-foreground mb-2 text-center uppercase tracking-wider">Bordskort</p>
+          <p className="text-xs text-foreground/70 mb-2 text-center uppercase tracking-wider">Bordskort</p>
           <div className="flex justify-center gap-3">
             {[0, 1, 2].map(i => {
               const topFaceUpCard = meFaceUpTopCards[i];
@@ -438,7 +438,7 @@ const OnlineGameBoard = ({ roomId, sessionId, playerIndex, onReset }: OnlineGame
       {/* My hand */}
       {me && (
         <div className="mt-auto">
-          <p className="text-xs text-muted-foreground mb-2 text-center uppercase tracking-wider">
+          <p className="text-xs text-foreground/70 mb-2 text-center uppercase tracking-wider">
             <Hand size={12} className="inline mr-1" />Hand ({me.hand.length})
           </p>
           <div className="flex justify-center gap-1.5 flex-wrap">
@@ -480,7 +480,7 @@ const OnlineGameBoard = ({ roomId, sessionId, playerIndex, onReset }: OnlineGame
             
           </>
         ) : (
-          <p className="text-muted-foreground text-sm">Väntar på {state.players[state.currentPlayerIndex]?.name}...</p>
+          <p className="text-foreground/70 text-sm">Väntar på {state.players[state.currentPlayerIndex]?.name}...</p>
         )}
       </div>
       </div>
@@ -494,7 +494,7 @@ const OnlineGameBoard = ({ roomId, sessionId, playerIndex, onReset }: OnlineGame
           >
             <span className="text-6xl mb-4 block">🏆</span>
             <h2 className="text-3xl font-bold text-gold mb-2">{winner?.name} vinner!</h2>
-            <p className="text-muted-foreground mb-8">
+            <p className="text-foreground/70 mb-8">
               {state.winner === playerIndex ? 'Bra jobb förfään! 🎉' : 'Det sög ju..'}
             </p>
             <button onClick={onReset} className="px-6 py-3 rounded-xl bg-gold text-primary-foreground font-semibold glow-gold">

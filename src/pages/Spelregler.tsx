@@ -1,20 +1,20 @@
 import { Link } from 'react-router-dom';
-import { ArrowLeft, CircleAlert, Flame, Layers3, Trophy } from 'lucide-react';
+import { ArrowLeft, CircleAlert, Flame, StepForward, BadgeInfo, Medal } from 'lucide-react';
 
 const sections = [
   {
     title: 'Målet',
-    icon: Trophy,
+    icon: Medal,
     body: 'Bli först av med alla dina kort. Du ska spela bort handkorten, sedan de tre uppvända bordskorten och till sist de tre nedåtvända korten.',
   },
   {
     title: 'Starten',
-    icon: Layers3,
+    icon: StepForward,
     body: 'Varje spelare får 3 nedåtvända kort, 3 uppvända kort på bordet och 3 kort på hand. Innan spelet börjar får du byta mellan handen och de uppvända bordskorten för att lägga upp en så stark uppställning som möjligt.',
   },
   {
     title: 'Så spelar du',
-    icon: CircleAlert,
+    icon: BadgeInfo,
     body: 'Du spelar ett eller flera kort med samma värde. Kortet du lägger måste vara lika högt eller högre än det översta kortet i högen. Så länge talongen finns kvar fylls handen upp till 3 kort efter din tur.',
   },
   {

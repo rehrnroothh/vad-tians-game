@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { createRoom, joinRoom } from '@/lib/roomService';
-import { Loader2, Plus, LogIn } from 'lucide-react';
+import { Loader2, Plus, LogIn, ChevronsRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface LobbyScreenProps {
@@ -66,7 +66,7 @@ const LobbyScreen = ({ onJoined, onStartSinglePlayer }: LobbyScreenProps) => {
               <Plus size={20} /> Skapa nytt rum
             </button>
             <button onClick={() => setMode('join')} className="w-full py-4 rounded-xl bg-secondary text-secondary-foreground font-semibold text-lg flex items-center justify-center gap-2">
-              <LogIn size={20} /> Gå med i rum
+              <ChevronsRight size={20} /> Gå med i rum
             </button>
             <button onClick={onStartSinglePlayer} className="w-full py-4 rounded-xl bg-emerald-600 text-white font-semibold text-lg flex items-center justify-center gap-2">              Kör mot Örjan Lax 24/7 
             </button>
